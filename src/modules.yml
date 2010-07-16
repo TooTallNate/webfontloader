@@ -25,3 +25,6 @@ typekit:
 
 custom:
   - custom/customcss.js
+
+manual:
+  - manual/manualcss.js

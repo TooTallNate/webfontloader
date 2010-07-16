@@ -73,6 +73,18 @@ webfont.DomHelper.prototype.createCssLink = function(src) {
   });
 };
 
+webfont.DomHelper.prototype.createCssStyle = function(body) {
+    var styleNode = this.createElement('style', {
+        'type': "text/css"
+    });
+    if (!!styleNode.styleSheet) {
+         styleNode.styleSheet.cssText = body;
+    } else {
+         styleNode.appendChild(this.document_.createTextNode(body));
+    }
+    return styleNode;    
+}
+
 webfont.DomHelper.prototype.createScriptSrc = function(src) {
   return this.createElement('script', {
     'src': src
