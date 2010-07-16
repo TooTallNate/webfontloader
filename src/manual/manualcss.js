@@ -2,6 +2,7 @@
  *
  * WebFont.load({
  *   manual: {
+ *     name: "Tangerine",
  *     path: "fonts/Tangerine",
  *     formats: ['woff', 'ttf', 'eot']
  *   }
@@ -18,29 +19,40 @@ webfont.ManualCss = function(userAgent, domHelper, configuration) {
 webfont.ManualCss.NAME = 'manual';
 
 webfont.ManualCss.FORMATS = {
-    'woff': 'woff',
-    'ttf': 'truetype',
-    'otf': 'truetype',
-    'svg': 'svg',
+  'woff': 'woff',
+  'ttf': 'truetype',
+  'otf': 'truetype',
+  'svg': 'svg'
+  // 'eot' doesn't support the format()
 };
 
 webfont.ManualCss.prototype.pickBestFormat = function() {
   var name = this.userAgent_.getName(),
-      version = this.userAgent_.getVersion(),
-      float
-      woff = false, ttf = true, otf = false, eot = false, svg = false;
-  switch (name) {
-    case "Firefox":
-      if (parseFloat(version) >= 3.6) {
+    version = this.userAgent_.getVersion(),
+    floatVersion = parseFloat(version),
+    woff = false, ttf = true, otf = false, eot = false, svg = false;
+  if (this.userAgent_.getPlatform().match(/iPad|iPod|iPhone/)) {
+    svg = true;
+    ttf = false;
+  } else {
+    switch (name) {
+      case "Firefox":
+        if (floatVersion >= 3.6) {
           woff = true;
-      }
-    case "MSIE":
-      if (parseFloat(version) >= 9) {
+        }
+        break;
+      case "Safari":
+        otf = true;
+        break;
+      case "MSIE":
+        if (floatVersion >= 9) {
           woff = true;
-      }
-      ttf = false;
-      eot = true;
-      break;
+        }
+        ttf = false;
+        eot = true;
+        break;
+      // Opera 10+ supports TTF font files
+    }
   }
   // Check in the preferred order
   if (woff && this.hasFormat("woff")) return "woff";
@@ -60,23 +72,20 @@ webfont.ManualCss.prototype.hasFormat = function(formatStr) {
 }
 
 webfont.ManualCss.prototype.load = function(onReady) {
-  var name = this.configuration_['name'];
-  var path = this.configuration_['path'];
-  var bestFormat = this.pickBestFormat();
+  this.configuration_['formats'] = this.configuration_['formats'] || [ 'ttf' ];
+  var name = this.configuration_['name'],
+    path = this.configuration_['path'],
+    bestFormat = this.pickBestFormat(),
+    notEot = bestFormat != "eot";
   if (bestFormat) {
     this.domHelper_.insertInto('head', this.domHelper_.createCssStyle(
-        /*@font-face {
-        	font-family: 'CloisterBlackLight';
-        	src: url('CloisterBlack-webfont.eot');
-        	src: local('☺'), url('CloisterBlack-webfont.woff') format('woff'), url('CloisterBlack-webfont.ttf') format('truetype'), url('CloisterBlack-webfont.svg#webfontrwSM9VT7') format('svg');
-        	font-weight: normal;
-        	font-style: normal;
-        }*/
       "@font-face { " +
         "font-family: '" + name + "'; " +
         "font-style: normal; " +
         "font-weight: normal; " +
-        "src: local('☺'), url('" + path + "." + bestFormat + "') format('" + webfont.ManualCss.FORMATS[bestFormat] + "'); " +
+        "src: " + (notEot ? "local('☺'), " : "") +
+                "url('" + path + "." + bestFormat + "')" +
+                (notEot ? " format('" + webfont.ManualCss.FORMATS[bestFormat] + "')" : "") + "; " +
       "}"
     ));
     onReady([name]);

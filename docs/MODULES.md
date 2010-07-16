@@ -45,5 +45,21 @@ provides.
     });
 
 
+## Manual
+
+To load a font from a manually defined URL, use the `manual` module. Here you
+need to specify the URL to the font files, omitting the file extension, as the
+_path_. You must also specify which formats of the font are available for the
+varying user-agents, in a _formats_ Array. And finally you must define the
+_name_ of the font, as it will be used in the CSS on the page.
+
+    WebFont.load({
+      manual: {
+        name: "Cloister",
+        path: "fonts/CloisterBlack-webfont",
+        formats: ['woff', 'ttf', 'eot', 'svg']
+      }
+    });
+
 [gfontapi]: https://code.google.com/apis/webfonts/docs/getting_started.html
 [tk]: http://typekit.com/
