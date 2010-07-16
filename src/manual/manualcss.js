@@ -78,16 +78,20 @@ webfont.ManualCss.prototype.load = function(onReady) {
     bestFormat = this.pickBestFormat(),
     notEot = bestFormat != "eot";
   if (bestFormat) {
-    this.domHelper_.insertInto('head', this.domHelper_.createCssStyle(
+    var styleNode = this.domHelper_.createElement('style', {
+        'type': "text/css"
+    });
+    this.domHelper_.insertInto('head', styleNode);
+    this.domHelper_.setCssStyle(styleNode,
       "@font-face { " +
         "font-family: '" + name + "'; " +
-        "font-style: normal; " +
-        "font-weight: normal; " +
         "src: " + (notEot ? "local('☺'), " : "") +
                 "url('" + path + "." + bestFormat + "')" +
                 (notEot ? " format('" + webfont.ManualCss.FORMATS[bestFormat] + "')" : "") + "; " +
+        "font-style: normal; " +
+        "font-weight: normal; " +
       "}"
-    ));
+    );
     onReady([name]);
   }
 };

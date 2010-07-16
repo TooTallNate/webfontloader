@@ -73,11 +73,8 @@ webfont.DomHelper.prototype.createCssLink = function(src) {
   });
 };
 
-webfont.DomHelper.prototype.createCssStyle = function(body) {
-    var styleNode = this.createElement('style', {
-        'type': "text/css"
-    });
-    if (!!styleNode.styleSheet) {
+webfont.DomHelper.prototype.setCssStyle = function(styleNode, body) {
+    if (styleNode.styleSheet) {
          styleNode.styleSheet.cssText = body;
     } else {
          styleNode.appendChild(this.document_.createTextNode(body));
